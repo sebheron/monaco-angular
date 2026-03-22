@@ -1,17 +1,19 @@
 {
-  "name": "angular-monaco-ls",
+  "name": "angular-monaco-worker",
   "version": "21.2.5",
-  "main": "build.js",
-  "files": [
-    "build.js",
-    ".vite/license.md"
-  ],
+  "description": "Typescript web worker for the Monaco Editor, embedding Angular's language service.",
   "type": "module",
+  "keywords": [
+    "angular",
+    "monaco",
+    "monaco-editor",
+    "worker",
+    "language-service"
+  ],
   "scripts": {
     "build": "rolldown build --config rolldown.config.js",
     "watch": "rolldown build --config rolldown.config.js --watch"
   },
-  "keywords": [],
   "author": "sebheron",
   "license": "MIT",
   "packageManager": "pnpm@10.28.0",
@@ -24,5 +26,10 @@
   },
   "dependencies": {
     "path-browserify-esm": "^1.0.6"
-  }
+  },
+  "main": "build.js",
+  "files": [
+    "build.js",
+    "licenses.json"
+  ]
 }
