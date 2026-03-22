@@ -1,0 +1,35 @@
+{
+  "name": "monaco-angular-worker",
+  "version": "21.2.5",
+  "description": "Typescript web worker for the Monaco Editor, embedding Angular's language service.",
+  "type": "module",
+  "keywords": [
+    "angular",
+    "monaco",
+    "monaco-editor",
+    "worker",
+    "language-service"
+  ],
+  "scripts": {
+    "build": "rolldown build --config rolldown.config.js",
+    "watch": "rolldown build --config rolldown.config.js --watch"
+  },
+  "author": "sebheron",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.0",
+  "devDependencies": {
+    "@angular/language-service": "21.2.5",
+    "rolldown": "1.0.0-rc.10"
+  },
+  "peerDependencies": {
+    "monaco-editor": ">0.55.0"
+  },
+  "dependencies": {
+    "path-browserify-esm": "^1.0.6"
+  },
+  "main": "build.js",
+  "files": [
+    "build.js",
+    "licenses.json"
+  ]
+}

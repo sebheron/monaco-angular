@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/src/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <main class="container">
+        <div class="editor">
+            <header class="header">
+                <button id="app-html" class="tab">
+                    <img src="/html5.svg" alt="html5" class="icon">
+                    <h3 class="title">app.html</h3>
+                </button><button id="app-ts" class="tab">
+                    <img src="/typescript.svg" alt="html5" class="icon">
+                    <h3 class="title">app.ts</h3>
+                </button><button id="app-css" class="tab">
+                    <img src="/css3.svg" alt="html5" class="icon">
+                    <h3 class="title">app.css</h3>
+                </button>
+            </header>
+            <div id="monaco-editor"></div>
+        </div>
+    </main>
+    <script type="module" src="/src/index.ts"></script>
+</body>
+
+</html>

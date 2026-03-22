@@ -61,7 +61,7 @@ function buildAssert() {
   return assert;
 }
 
-function buildFsShim(getScriptText) {
+function buildFsWrap(getScriptText) {
   return {
     readFileSync: (filePath) => {
       const content = getScriptText(filePath);
@@ -95,7 +95,7 @@ function buildFsShim(getScriptText) {
   };
 }
 
-function buildProcessShim() {
+function buildProcessWrap() {
   return {
     ...globalThis.process,
     platform: "linux",
@@ -138,15 +138,15 @@ function buildProcessShim() {
   };
 }
 
-function buildRequireShim(getScriptText) {
+function buildRequireWrap(getScriptText) {
   const assert = buildAssert();
-  const fsShim = buildFsShim(getScriptText);
+  const fs = buildFsWrap(getScriptText);
 
-  const shimmedRequire = (moduleName) => {
+  const wrappedRequire = (moduleName) => {
     const normalised = moduleName.replace(/^node:/, "");
     const moduleOverrides = {
       typescript,
-      fs: fsShim,
+      fs,
       os: {},
       path: wrappedPath,
       "node:path": wrappedPath,
@@ -157,7 +157,7 @@ function buildRequireShim(getScriptText) {
         }),
         URL: globalThis.URL,
       },
-      module: { createRequire: () => shimmedRequire },
+      module: { createRequire: () => wrappedRequire },
       assert,
     };
     if (!(normalised in moduleOverrides)) {
@@ -168,7 +168,7 @@ function buildRequireShim(getScriptText) {
     return moduleOverrides[normalised];
   };
 
-  return shimmedRequire;
+  return wrappedRequire;
 }
 
 function buildProject(worker, scriptInfoMap) {
@@ -265,29 +265,22 @@ function buildProject(worker, scriptInfoMap) {
 }
 
 class AngularWorker extends TypeScriptWorker {
-  constructor() {
-    super(...arguments);
+  constructor(ctx, createData) {
+    super(ctx, createData);
     this.angularLanguageService = null;
     this._virtualScriptInfos = new Map();
   }
 
   getScriptFileNames() {
-    const real = super.getScriptFileNames();
-    const virtual = [...this._virtualScriptInfos.keys()].filter(
-      (k) => !real.includes(k)
-    );
-    return [...real, ...virtual];
+    return [...(new Set([...super.getScriptFileNames(), ...this._virtualScriptInfos.keys()]))];
   }
 
   _getScriptText(fileName) {
-    const real = super._getScriptText(fileName);
-    if (real !== undefined) return real;
-    const info = this._virtualScriptInfos.get(fileName);
-    if (info) {
-      const snap = info.getSnapshot();
-      return snap.getText(0, snap.getLength());
-    }
-    return undefined;
+    let script = super._getScriptText(fileName);
+    if (script) return script;
+    const snap = this._virtualScriptInfos.get(fileName)?.getSnapshot();
+    script = snap?.getText(0, snap.getLength());
+    return script;
   }
 
   getScriptSnapshot(fileName) {
@@ -316,11 +309,11 @@ class AngularWorker extends TypeScriptWorker {
   getAngularLanguageService() {
     if (this.angularLanguageService) return this.angularLanguageService;
 
-    const requireShim = buildRequireShim((filePath) => this._getScriptText(filePath));
+    const requireWrap = buildRequireWrap((filePath) => this._getScriptText(filePath));
 
     document = { baseURI: "file:///" };
-    require = requireShim;
-    process = buildProcessShim();
+    require = requireWrap;
+    process = buildProcessWrap();
 
     const plugin = ls({ typescript });
 
@@ -374,6 +367,7 @@ class AngularWorker extends TypeScriptWorker {
 
 self.onmessage = () => {
   initialize((ctx, createData) => {
+    console.log("Initializing Angular Worker with context", ctx, "and createData", createData);
     return new AngularWorker(ctx, createData);
   });
 };
