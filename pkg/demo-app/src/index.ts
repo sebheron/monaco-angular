@@ -63,8 +63,6 @@ monaco.typescript.typescriptDefaults.addExtraLib(
     'file:///node_modules/tslib/index.d.ts'
 );
 
-// monaco.typescript.typescriptDefaults.setEagerModelSync(true);
-
 const tsUri = monaco.Uri.parse('file:///app/app.ts');
 const tsModel = monaco.editor.createModel(
 `import { Component } from '@angular/core';
