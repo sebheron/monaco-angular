@@ -90,6 +90,13 @@ html, body {
 
 #monaco-editor {
     background-color: var(--bg-monaco);
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+
+    .monaco-editor {
+        --vscode-editor-background: transparent;
+        --vscode-editorGutter-background: transparent;
+    }
 }
 
 @media (max-width: 725px) {
