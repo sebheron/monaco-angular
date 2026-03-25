@@ -297,7 +297,6 @@ function buildProject(worker, virtualScriptInfos, fileAccessor) {
 
 class AngularWorker extends TypeScriptWorker {
   constructor(ctx, createData) {
-    console.log("Creating AngularWorker with createData", createData);
     super(ctx, createData);
     // After looking it doesn't look like the standard tsworker does any caching of its own.
     // Admittedly the angular worker does seem to request more often, but it doesn't seem to add overhead.
@@ -384,7 +383,6 @@ class AngularWorker extends TypeScriptWorker {
   }
 
   async getSemanticDiagnostics(fileName) {
-    // console.log("Getting Angular diagnostics for", fileName);
     try {
       const diagnostics = this.getAngularLanguageService().getSemanticDiagnostics(fileName);
       const clearedDiagnostics = TypeScriptWorker.clearFiles(diagnostics).map((d) => {
@@ -492,21 +490,14 @@ class AngularWorker extends TypeScriptWorker {
   }
 
   async doValidation(uri) {
-    console.log('Starting Angular validation for', uri);
     let document = this._getTextDocument(uri);
-    console.log("Got document for", uri, !!document);
-    console.log("Checking compilation settings for", uri, this.getCompilationSettings());
     // Angular needs the compilation settings for html validation.
     // We're fine without the initial check here, it will revalidate later.
     if (!document || !this.getCompilationSettings()) return [];
-  
-    console.log("Has document and compilation settings for", uri);
 
     try {
       const diagnostics = this.getAngularLanguageService().getSemanticDiagnostics(uri);
       if (!diagnostics || diagnostics.length === 0) return [];
-
-      console.log("Got Angular diagnostics for", uri, diagnostics);
   
       return diagnostics.map((d) => {
         const start = document.positionAt(d.start ?? 0);

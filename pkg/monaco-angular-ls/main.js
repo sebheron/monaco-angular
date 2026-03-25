@@ -1,11 +1,18 @@
 import { WorkerManager as TSWorkerManager } from "monaco-editor/esm/vs/language/typescript/workerManager.js";
 import { WorkerManager as HTMLWorkerManager } from "monaco-editor/esm/vs/language/html/workerManager.js";
+import { Emitter } from 'monaco-editor/esm/vs/base/common/event.js';
 import { DiagnosticsAdapter } from "monaco-editor/esm/vs/language/html/htmlMode.js";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api2.js";
 import { createWebWorker } from "monaco-editor/esm/vs/common/workers.js";
 
 const ALL_LANGUAGES = new Set([
-  "typescript", "html", "css", "scss", "less", "stylus", "sass",
+  "typescript",
+  "html",
+  "css",
+  "scss",
+  "less",
+  "stylus",
+  "sass",
 ]);
 
 let tsInstance = null;
@@ -17,10 +24,10 @@ function getClient() {
       this._worker = createWebWorker({
         // Module id needs to match tsWorker
         moduleId: "vs/language/typescript/tsWorker",
-        createWorker: () => new Worker(
-          new URL('./angular.worker.js', import.meta.url),
-          { type: "module" }
-        ),
+        createWorker: () =>
+          new Worker(new URL("./angular.worker.js", import.meta.url), {
+            type: "module",
+          }),
         label: this._modeId,
         keepIdleModels: true,
         createData: {
@@ -58,7 +65,8 @@ function getLanguageServiceWorker(...resources) {
 
 function syncAllLanguages() {
   return this._worker.withSyncedResources(
-    editor.getModels()
+    editor
+      .getModels()
       .filter((model) => ALL_LANGUAGES.has(model.getLanguageId()))
       .map((model) => model.uri)
   );
@@ -101,7 +109,10 @@ function waitForTs() {
 
 function setupAngularWorker() {
   const origTs = Object.getOwnPropertyDescriptors(TSWorkerManager.prototype);
-  const origHtml = Object.getOwnPropertyDescriptors(HTMLWorkerManager.prototype);
+  const origHtml = Object.getOwnPropertyDescriptors(
+    HTMLWorkerManager.prototype
+  );
+  const disposables = [];
 
   TSWorkerManager.prototype._getClient = function () {
     interceptTs(this);
@@ -116,7 +127,9 @@ function setupAngularWorker() {
     interceptHtml(this);
     return waitForTs().then((ts) => ts._getClient());
   };
-  HTMLWorkerManager.prototype.getLanguageServiceWorker = function (...resources) {
+  HTMLWorkerManager.prototype.getLanguageServiceWorker = function (
+    ...resources
+  ) {
     interceptHtml(this);
     return waitForTs().then((ts) => ts.getLanguageServiceWorker(...resources));
   };
@@ -128,15 +141,43 @@ function setupAngularWorker() {
   HTMLWorkerManager.prototype._checkIfIdle = function () {};
 
   const htmlWorker = (...uris) => {
-    return waitForTs().then(ts => ts.getLanguageServiceWorker(...uris));
+    return waitForTs().then((ts) => ts.getLanguageServiceWorker(...uris));
   };
 
-  const diagnosticsDisposable = new DiagnosticsAdapter("html", htmlWorker, () => {});
+  const emitter = new Emitter();
+  const listeners = new Map();
+
+  const watch = (model) => {
+    if (model.getLanguageId() === "html" || listeners.has(model.uri.toString()))
+      return;
+    listeners.set(
+      model.uri.toString(),
+      model.onDidChangeContent(() => emitter.fire())
+    );
+  };
+
+  const unwatch = (model) => {
+    const key = model.uri.toString();
+    listeners.get(key)?.dispose();
+    listeners.delete(key);
+  };
+
+  editor.getModels().forEach(watch);
+  disposables.push(editor.onDidCreateModel(watch));
+  disposables.push(editor.onWillDisposeModel(unwatch));
+  disposables.push(editor.onDidChangeModelLanguage((e) => {
+    unwatch(e.model);
+    watch(e.model);
+  }));
+  disposables.push(
+    new DiagnosticsAdapter("html", htmlWorker, (cb) => emitter.event(cb))
+  );
+  disposables.push({ dispose: () => listeners.forEach((l) => l.dispose()) });
 
   return () => {
     Object.defineProperties(TSWorkerManager.prototype, origTs);
     Object.defineProperties(HTMLWorkerManager.prototype, origHtml);
-    diagnosticsDisposable.dispose();
+    disposables.forEach((d) => d.dispose());
     tsInstance = null;
   };
 }
