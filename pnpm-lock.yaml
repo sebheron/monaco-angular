@@ -8,7 +8,23 @@ importers:
 
   .: {}
 
-  pkg/demo-app:
+  pkg/monaco-angular-ls:
+    dependencies:
+      monaco-editor:
+        specifier: '>0.55.0'
+        version: 0.55.1
+      path-browserify-esm:
+        specifier: ^1.0.6
+        version: 1.0.6
+    devDependencies:
+      '@angular/language-service':
+        specifier: 21.2.5
+        version: 21.2.5
+      rolldown:
+        specifier: 1.0.0-rc.10
+        version: 1.0.0-rc.10
+
+  pkg/sandbox:
     dependencies:
       '@angular/core':
         specifier: ^21.2.5
@@ -28,22 +44,6 @@ importers:
       vite:
         specifier: ^8.0.0
         version: 8.0.1(jiti@2.6.1)
-
-  pkg/monaco-angular-ls:
-    dependencies:
-      monaco-editor:
-        specifier: '>0.55.0'
-        version: 0.55.1
-      path-browserify-esm:
-        specifier: ^1.0.6
-        version: 1.0.6
-    devDependencies:
-      '@angular/language-service':
-        specifier: 21.2.5
-        version: 21.2.5
-      rolldown:
-        specifier: 1.0.0-rc.10
-        version: 1.0.0-rc.10
 
 packages:
 
