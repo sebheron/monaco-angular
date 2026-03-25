@@ -13,9 +13,9 @@ importers:
       '@angular/core':
         specifier: ^21.2.5
         version: 21.2.5(rxjs@7.8.2)
-      monaco-angular-worker:
+      monaco-angular-ls:
         specifier: workspace:*
-        version: link:../monaco-angular-worker
+        version: link:../monaco-angular-ls
       monaco-editor:
         specifier: ^0.55.1
         version: 0.55.1
@@ -29,7 +29,7 @@ importers:
         specifier: ^8.0.0
         version: 8.0.1(jiti@2.6.1)
 
-  pkg/monaco-angular-worker:
+  pkg/monaco-angular-ls:
     dependencies:
       monaco-editor:
         specifier: '>0.55.0'

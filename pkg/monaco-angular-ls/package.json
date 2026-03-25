@@ -1,0 +1,45 @@
+{
+  "name": "monaco-angular-ls",
+  "version": "21.2.5",
+  "description": "Worker for Angular language service in Monaco Editor",
+  "type": "module",
+  "keywords": [
+    "angular",
+    "monaco",
+    "monaco-editor",
+    "worker",
+    "language-service"
+  ],
+  "scripts": {
+    "dev": "rolldown build --config rolldown.config.js --watch",
+    "build": "rolldown build --config rolldown.config.js"
+  },
+  "author": "sebheron",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.0",
+  "devDependencies": {
+    "@angular/language-service": "21.2.5",
+    "rolldown": "1.0.0-rc.10"
+  },
+  "peerDependencies": {
+    "monaco-editor": ">0.55.0"
+  },
+  "dependencies": {
+    "path-browserify-esm": "^1.0.6"
+  },
+  "types": "./main.d.ts",
+  "exports": {
+    "./worker": "./esm/monaco-angular-ls.worker.js",
+    ".": {
+      "import": "./esm/monaco-angular-ls.js",
+      "types": "./main.d.ts"
+    }
+  },
+  "files": [
+    "build.js",
+    "licenses.json",
+    "main.d.ts",
+    "./esm/monaco-angular-ls.js",
+    "./esm/monaco-angular-ls.worker.js"
+  ]
+}

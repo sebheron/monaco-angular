@@ -1,7 +1,8 @@
 {
+    "private": true,
     "scripts": {
-        "dev": "pnpm --filter demo-app dev",
-        "watch": "pnpm --filter monaco-angular-worker watch",
-        "build": "pnpm build"
+        "dev": "pnpm -r --parallel dev",
+        "build": "pnpm -r build",
+        "build:lib": "pnpm --filter monaco-angular build"
     }
 }

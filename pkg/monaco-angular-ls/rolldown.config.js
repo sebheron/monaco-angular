@@ -1,6 +1,8 @@
 import { defineConfig } from "rolldown";
 
 const googleLegal = `/**
+* The following licence applies to the @angular/language-service package.
+*
 * @license
 * Copyright Google LLC All Rights Reserved.
 *
@@ -9,7 +11,10 @@ const googleLegal = `/**
 */`
 
 export default defineConfig({
-  input: "index.js",
+  input: {
+    worker: "worker.js",
+    main: "main.js",
+  },
   plugins: [
     {
       name: "remove-require-polyfill",
@@ -33,13 +38,28 @@ export default defineConfig({
   ],
   external: (id) => id === "monaco-editor" || id.startsWith("monaco-editor/"),
   output: {
+    dir: "esm",
     format: "esm",
-    file: "build.js",
+    // file: "monaco-angular-ls.worker.js",
+    entryFileNames: (chunk) => {
+      if (chunk.name === "worker") {
+        return "monaco-angular-ls.worker.js";
+      }
+      return "monaco-angular-ls.js";
+    },
+    // Might need to figure out how to put this in the actual file, otherwise I can't test without building.
     intro: "var require;var document;var process;",
     // Can't get this to work, leaving as a note.
     polyfillRequire: false,
-    minify: true,
-    comments: false,
+    // minify: true,
+    comments: {
+      legal: false,
+      jsdoc: false,
+      annotation: true,
+    },
     postBanner: googleLegal,
   },
+  // treeshake: {
+  //   manualPureFunctions
+  // }
 });

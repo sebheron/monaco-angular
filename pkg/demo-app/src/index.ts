@@ -3,38 +3,19 @@ import coreTypes from '../node_modules/@angular/core/types/core.d.ts?raw';
 import tslibTypes from '../node_modules/tslib/tslib.d.ts?raw';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
-import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
-import tsWorker from 'monaco-angular-worker?worker';
+import angularWorker from 'monaco-angular-ls/worker?worker';
+import setupAngularWorker from 'monaco-angular-ls';
 
-//@ts-ignore
-import { WorkerManager } from "monaco-editor/esm/vs/language/typescript/workerManager.js";
-// import { editor } from "monaco-editor/esm/vs/editor/editor.api2.js";
-  
-const EXTRA_LANGUAGES = new Set(["html", "css", "scss", "less", "stylus", "sass"]);
-
-const original = WorkerManager.prototype.getLanguageServiceWorker;
-
-WorkerManager.prototype.getLanguageServiceWorker = async function (...resources: any[]) {
-  // Collect all html/css/scss model URIs
-  const extraUris = monaco.editor
-    .getModels()
-    .filter((m) => EXTRA_LANGUAGES.has(m.getLanguageId()))
-    .map((m) => m.uri);
-
-  return original.call(this, ...resources, ...extraUris);
-};
+setupAngularWorker();
+const angularWorkerInstance = new angularWorker();
 
 self.MonacoEnvironment = {
     getWorker(_, label) {
-        console.log(label);
-        if (label === 'typescript' || label === 'javascript') {
-            return new tsWorker();
+        if (label === 'typescript' || label === 'javascript' || label === 'html') {
+            return angularWorkerInstance;
         }
         else if (label === 'css') {
             return new cssWorker();
-        }
-        else if (label === 'html') {
-            return new htmlWorker();
         }
         else {
             return new editorWorker();
@@ -84,30 +65,6 @@ monaco.typescript.typescriptDefaults.addExtraLib(
 
 // monaco.typescript.typescriptDefaults.setEagerModelSync(true);
 
-monaco.languages.onLanguage('typescript', () => {
-    monaco.typescript.getTypeScriptWorker().then(async workerFn => {
-        const worker = await workerFn(tsUri);
-        console.log(Object.keys(worker));
-        
-        // // Manually push the HTML model to the worker
-        // //@ts-ignore
-        // worker.$acceptNewModel({
-        //     url: htmlUri.toString(),
-        //     lines: htmlModel.getLinesContent(),
-        //     EOL: htmlModel.getEOL(),
-        //     versionId: htmlModel.getVersionId()
-        // });
-
-        // worker.$acceptNewModel({
-        //     url: cssUri.toString(),
-        //     lines: cssModel.getLinesContent(),
-        //     EOL: cssModel.getEOL(),
-        //     versionId: cssModel.getVersionId()
-        // });
-
-    });
-});
-
 const tsUri = monaco.Uri.parse('file:///app/app.ts');
 const tsModel = monaco.editor.createModel(
 `import { Component } from '@angular/core';
@@ -124,7 +81,7 @@ export class HelloComponent {
     tsUri
 );
 
-const htmlUri = monaco.Uri.parse('file:///app.html');
+const htmlUri = monaco.Uri.parse('file:///app/app.html');
 const htmlModel = monaco.editor.createModel(
 `<div>
     <h1>{{ title }}</h1>
@@ -195,3 +152,10 @@ setActiveTab(openTab);
 appTsTab.addEventListener('click', () => setActiveTab('app-ts'));
 appHtmlTab.addEventListener('click', () => setActiveTab('app-html'));
 appCssTab.addEventListener('click', () => setActiveTab('app-css'));
+
+const del = document.getElementById('delete');
+del?.addEventListener('click', () => {
+    console.log('Disposing model');
+    htmlModel.dispose();
+    console.log('Disposed', monaco.editor.getModels().map(m => m.uri.toString()));
+});
