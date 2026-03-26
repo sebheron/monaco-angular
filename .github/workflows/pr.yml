@@ -8,7 +8,7 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
-      - "pkg/**"
+      - "pkg/**/*"
 
 permissions:
   contents: write
