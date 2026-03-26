@@ -25,7 +25,7 @@ jobs:
           node-version: "20.x"
           node-version-file: "package.json"
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm --filter sandbox exec playwright install --with-deps chromium
