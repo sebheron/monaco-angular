@@ -3,7 +3,6 @@
     "scripts": {
         "dev": "pnpm -r --parallel dev",
         "build": "pnpm -r build",
-        "build:lib": "pnpm --filter monaco-angular build",
-        "build:sandbox": "pnpm --filter sandbox build"
+        "test": "pnpm --filter sandbox test"
     }
 }
