@@ -25,7 +25,7 @@ function getClient() {
         // Module id needs to match tsWorker
         moduleId: "vs/language/typescript/tsWorker",
         createWorker: () =>
-          new Worker(new URL("./monaco-angular-ls.worker.js", import.meta.url), {
+          new Worker(new URL("./monaco-angular.worker.js", import.meta.url), {
             type: "module",
           }),
         label: this._modeId,

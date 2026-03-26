@@ -13,32 +13,42 @@ const addFileProtocol = (p) => "file://" + p;
 const pathHandlers = {
   isAbsolute: (original) => (p) => hasFileProtocol(p) || original(p),
 
-  resolve: (original) => (...args) => {
-    const cleaned = args.map((a) => (typeof a === "string" ? stripFileProtocol(a) : a));
-    if (cleaned.length === 0 || !cleaned[0].startsWith("/")) {
-      cleaned.unshift("/");
-    }
-    return addFileProtocol(original(...cleaned));
-  },
+  resolve:
+    (original) =>
+    (...args) => {
+      const cleaned = args.map((a) =>
+        typeof a === "string" ? stripFileProtocol(a) : a
+      );
+      if (cleaned.length === 0 || !cleaned[0].startsWith("/")) {
+        cleaned.unshift("/");
+      }
+      return addFileProtocol(original(...cleaned));
+    },
 
-  join: (original) => (...args) => {
-    const hadProtocol = args.some((a) => hasFileProtocol(a));
-    const result = original(...args.map((a) => stripFileProtocol(a)));
-    return hadProtocol ? addFileProtocol(result) : result;
-  },
+  join:
+    (original) =>
+    (...args) => {
+      const hadProtocol = args.some((a) => hasFileProtocol(a));
+      const result = original(...args.map((a) => stripFileProtocol(a)));
+      return hadProtocol ? addFileProtocol(result) : result;
+    },
 
   relative: (original) => (from, to) =>
     original(stripFileProtocol(from), stripFileProtocol(to)),
 
   dirname: (original) => (p) =>
-    hasFileProtocol(p) ? addFileProtocol(original(stripFileProtocol(p))) : original(p),
+    hasFileProtocol(p)
+      ? addFileProtocol(original(stripFileProtocol(p)))
+      : original(p),
 
   basename: (original) => (p, ext) => original(stripFileProtocol(p), ext),
 
   extname: (original) => (p) => original(stripFileProtocol(p)),
 
   normalize: (original) => (p) =>
-    hasFileProtocol(p) ? addFileProtocol(original(stripFileProtocol(p))) : original(p),
+    hasFileProtocol(p)
+      ? addFileProtocol(original(stripFileProtocol(p)))
+      : original(p),
 };
 
 const wrappedPath = new Proxy(path, {
@@ -60,7 +70,9 @@ function buildFileAccessor(worker) {
     readFileSync: (filePath) => {
       const content = readFile(filePath);
       if (content === undefined) {
-        const error = new Error(`ENOENT: no such file or directory, open '${filePath}'`);
+        const error = new Error(
+          `ENOENT: no such file or directory, open '${filePath}'`
+        );
         error.code = "ENOENT";
         throw error;
       }
@@ -189,7 +201,13 @@ function scriptKindFromExtension(fileName) {
   const ext = fileName.substring(fileName.lastIndexOf("."));
   if (ext === ".tsx" || ext === ".jsx") return typescript.ScriptKind.TSX;
   if (ext === ".js") return typescript.ScriptKind.JS;
-  if (ext === ".html" || ext === ".css" || ext === ".scss" || ext === ".less" || ext === ".sass")
+  if (
+    ext === ".html" ||
+    ext === ".css" ||
+    ext === ".scss" ||
+    ext === ".less" ||
+    ext === ".sass"
+  )
     return typescript.ScriptKind.External;
   return typescript.ScriptKind.TS;
 }
@@ -218,10 +236,12 @@ function buildProject(worker, virtualScriptInfos, fileAccessor) {
   const scriptInfoCache = new Map();
 
   const getScriptInfo = (fileName) => {
-    if (virtualScriptInfos.has(fileName)) return virtualScriptInfos.get(fileName);
+    if (virtualScriptInfos.has(fileName))
+      return virtualScriptInfos.get(fileName);
 
     if (scriptInfoCache.has(fileName)) {
-      if (fileAccessor.fileExists(fileName)) return scriptInfoCache.get(fileName);
+      if (fileAccessor.fileExists(fileName))
+        return scriptInfoCache.get(fileName);
       scriptInfoCache.delete(fileName);
       return undefined;
     }
@@ -284,7 +304,12 @@ function buildProject(worker, virtualScriptInfos, fileAccessor) {
       logger,
       toCanonicalFileName: (fileName) => fileName,
       getScriptInfo,
-      getOrCreateScriptInfoForNormalizedPath: (fileName, openedByClient, fileContent, scriptKind) => {
+      getOrCreateScriptInfoForNormalizedPath: (
+        fileName,
+        openedByClient,
+        fileContent,
+        scriptKind
+      ) => {
         const existing = getScriptInfo(fileName);
         if (existing) return existing;
         return createScriptInfo(fileName, fileContent, scriptKind);
@@ -304,11 +329,18 @@ class AngularWorker extends TypeScriptWorker {
     //this.fetchingFromCache = false;
     this._angularLanguageService = null;
     this._virtualScriptInfos = new Map();
-    this._htmlLanguageService = getHTMLLanguageService({ useDefaultDataProvider: true });
+    this._htmlLanguageService = getHTMLLanguageService({
+      useDefaultDataProvider: true,
+    });
   }
 
   getScriptFileNames() {
-    return [...new Set([...super.getScriptFileNames(), ...this._virtualScriptInfos.keys()])];
+    return [
+      ...new Set([
+        ...super.getScriptFileNames(),
+        ...this._virtualScriptInfos.keys(),
+      ]),
+    ];
   }
 
   getScriptText(fileName) {
@@ -341,11 +373,16 @@ class AngularWorker extends TypeScriptWorker {
     return super.getScriptKind(fileName);
   }
 
-  _getTextDocument(uri) {
+  getTextDocument(uri) {
     let models = this._ctx.getMirrorModels();
     for (let model of models) {
       if (model.uri.toString() === uri) {
-        return TextDocument.create(uri, "html", model.version, model.getValue());
+        return TextDocument.create(
+          uri,
+          "html",
+          model.version,
+          model.getValue()
+        );
       }
     }
     return null;
@@ -384,85 +421,156 @@ class AngularWorker extends TypeScriptWorker {
 
   async getSemanticDiagnostics(fileName) {
     try {
-      const diagnostics = this.getAngularLanguageService().getSemanticDiagnostics(fileName);
-      const clearedDiagnostics = TypeScriptWorker.clearFiles(diagnostics).map((d) => {
-        // Strip this, can't be serialized and isn't used anyways.
-        d.sourceFile = undefined;
-        return d;
-      });
+      console.log("getSemanticDiagnostics " + fileName);
+      const diagnostics =
+        this.getAngularLanguageService().getSemanticDiagnostics(fileName);
+      const clearedDiagnostics = TypeScriptWorker.clearFiles(diagnostics).map(
+        (d) => {
+          // Strip this, can't be serialized and isn't used anyways.
+          d.sourceFile = undefined;
+          return d;
+        }
+      );
       return clearedDiagnostics;
     } catch (error) {
       console.warn("Angular diagnostics unavailable for", fileName, error);
-      const diagnostics = this._languageService.getSemanticDiagnostics(fileName);
+      const diagnostics =
+        this._languageService.getSemanticDiagnostics(fileName);
       return TypeScriptWorker.clearFiles(diagnostics);
     }
   }
 
   async getCompletionsAtPosition(fileName, position) {
     return (
-      this.getAngularLanguageService().getCompletionsAtPosition(fileName, position, undefined) ??
-      this._languageService.getCompletionsAtPosition(fileName, position, undefined)
+      this.getAngularLanguageService().getCompletionsAtPosition(
+        fileName,
+        position,
+        undefined
+      ) ??
+      this._languageService.getCompletionsAtPosition(
+        fileName,
+        position,
+        undefined
+      )
     );
   }
 
   async getQuickInfoAtPosition(fileName, position) {
     return (
-      this.getAngularLanguageService().getQuickInfoAtPosition(fileName, position) ??
-      this._languageService.getQuickInfoAtPosition(fileName, position)
+      this.getAngularLanguageService().getQuickInfoAtPosition(
+        fileName,
+        position
+      ) ?? this._languageService.getQuickInfoAtPosition(fileName, position)
     );
   }
 
   async getDefinitionAtPosition(fileName, position) {
     try {
-      const result = this.getAngularLanguageService().getDefinitionAndBoundSpan(fileName, position);
+      const result = this.getAngularLanguageService().getDefinitionAndBoundSpan(
+        fileName,
+        position
+      );
       if (result?.definitions?.length) return result.definitions;
     } catch {}
-    return this._languageService.getDefinitionAtPosition(fileName, position) ?? [];
+    return (
+      this._languageService.getDefinitionAtPosition(fileName, position) ?? []
+    );
   }
-  
+
   async getTypeDefinitionAtPosition(fileName, position) {
     try {
-      const result = this.getAngularLanguageService().getTypeDefinitionAtPosition(fileName, position);
+      const result =
+        this.getAngularLanguageService().getTypeDefinitionAtPosition(
+          fileName,
+          position
+        );
       if (result?.length) return result;
     } catch {}
-    return this._languageService.getTypeDefinitionAtPosition(fileName, position) ?? [];
+    return (
+      this._languageService.getTypeDefinitionAtPosition(fileName, position) ??
+      []
+    );
   }
-  
-  async getCompletionEntryDetails(fileName, position, entryName, formatOptions, preferences, data) {
+
+  async getCompletionEntryDetails(
+    fileName,
+    position,
+    entryName,
+    formatOptions,
+    preferences,
+    data
+  ) {
     try {
       const result = this.getAngularLanguageService().getCompletionEntryDetails(
-        fileName, position, entryName, formatOptions, preferences, data
+        fileName,
+        position,
+        entryName,
+        formatOptions,
+        preferences,
+        data
       );
       if (result) return result;
     } catch {}
     return this._languageService.getCompletionEntryDetails(
-      fileName, position, entryName, formatOptions, preferences
+      fileName,
+      position,
+      entryName,
+      formatOptions,
+      preferences
     );
   }
-  
+
   async getSignatureHelpItems(fileName, position, options) {
     try {
-      const result = this.getAngularLanguageService().getSignatureHelpItems(fileName, position, options);
+      const result = this.getAngularLanguageService().getSignatureHelpItems(
+        fileName,
+        position,
+        options
+      );
       if (result) return result;
     } catch {}
-    return this._languageService.getSignatureHelpItems(fileName, position, options);
+    return this._languageService.getSignatureHelpItems(
+      fileName,
+      position,
+      options
+    );
   }
-  
-  async getCodeFixesAtPosition(fileName, start, end, errorCodes, formatOptions, preferences) {
+
+  async getCodeFixesAtPosition(
+    fileName,
+    start,
+    end,
+    errorCodes,
+    formatOptions,
+    preferences
+  ) {
     try {
       const ngFixes = this.getAngularLanguageService().getCodeFixesAtPosition(
-        fileName, start, end, errorCodes, formatOptions, preferences
+        fileName,
+        start,
+        end,
+        errorCodes,
+        formatOptions,
+        preferences
       );
       if (ngFixes?.length) return ngFixes;
     } catch {}
-    return this._languageService.getCodeFixesAtPosition(
-      fileName, start, end, errorCodes, formatOptions, preferences
-    ) ?? [];
+    return (
+      this._languageService.getCodeFixesAtPosition(
+        fileName,
+        start,
+        end,
+        errorCodes,
+        formatOptions,
+        preferences
+      ) ?? []
+    );
   }
-  
+
   async getSuggestionDiagnostics(fileName) {
     try {
-      const diagnostics = this.getAngularLanguageService().getSuggestionDiagnostics(fileName);
+      const diagnostics =
+        this.getAngularLanguageService().getSuggestionDiagnostics(fileName);
       return TypeScriptWorker.clearFiles(diagnostics).map((d) => {
         d.sourceFile = undefined;
         return d;
@@ -472,39 +580,67 @@ class AngularWorker extends TypeScriptWorker {
       this._languageService.getSuggestionDiagnostics(fileName)
     );
   }
-  
+
   async getEncodedSemanticClassifications(fileName, span, format) {
     try {
-      const result = this.getAngularLanguageService().getEncodedSemanticClassifications(fileName, span, format);
+      const result =
+        this.getAngularLanguageService().getEncodedSemanticClassifications(
+          fileName,
+          span,
+          format
+        );
       if (result?.spans?.length) return result;
     } catch {}
-    return this._languageService.getEncodedSemanticClassifications(fileName, span, format);
+    return this._languageService.getEncodedSemanticClassifications(
+      fileName,
+      span,
+      format
+    );
   }
-  
+
   async getOutliningSpans(fileName) {
     try {
-      const result = this.getAngularLanguageService().getOutliningSpans(fileName);
+      const result =
+        this.getAngularLanguageService().getOutliningSpans(fileName);
       if (result?.length) return result;
     } catch {}
     return this._languageService.getOutliningSpans(fileName);
   }
 
   async doValidation(uri) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     // Angular needs the compilation settings for html validation.
     // We're fine without the initial check here, it will revalidate later.
     if (!document || !this.getCompilationSettings()) return [];
 
+    const info = this._virtualScriptInfos.get(uri);
+    if (info) {
+      info.open(document.getText());
+    } else {
+      const scriptKind = scriptKindFromExtension(uri);
+      const newInfo = new typescript.server.ScriptInfo(
+        { useCaseSensitiveFileNames: false },
+        uri,
+        scriptKind,
+        false,
+        uri
+      );
+      newInfo.open(document.getText());
+      this._virtualScriptInfos.set(uri, newInfo);
+    }
+
     try {
-      const diagnostics = this.getAngularLanguageService().getSemanticDiagnostics(uri);
+      const diagnostics =
+        this.getAngularLanguageService().getSemanticDiagnostics(uri);
       if (!diagnostics || diagnostics.length === 0) return [];
-  
+
       return diagnostics.map((d) => {
         const start = document.positionAt(d.start ?? 0);
         const end = document.positionAt((d.start ?? 0) + (d.length ?? 0));
-        const message = typeof d.messageText === "string"
-          ? d.messageText
-          : d.messageText.messageText;
+        const message =
+          typeof d.messageText === "string"
+            ? d.messageText
+            : d.messageText.messageText;
         const severityMap = { 0: 2, 1: 1, 2: 4, 3: 3 };
         return {
           range: { start, end },
@@ -521,62 +657,78 @@ class AngularWorker extends TypeScriptWorker {
   }
 
   async doComplete(uri, position) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return null;
     let htmlDocument = this._htmlLanguageService.parseHTMLDocument(document);
-    return this._htmlLanguageService.doComplete(document, position, htmlDocument);
+    return this._htmlLanguageService.doComplete(
+      document,
+      position,
+      htmlDocument
+    );
   }
 
   async format(uri, range, options) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return [];
     return this._htmlLanguageService.format(document, range, options);
   }
 
   async doHover(uri, position) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return null;
     let htmlDocument = this._htmlLanguageService.parseHTMLDocument(document);
     return this._htmlLanguageService.doHover(document, position, htmlDocument);
   }
 
   async findDocumentHighlights(uri, position) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return [];
     let htmlDocument = this._htmlLanguageService.parseHTMLDocument(document);
-    return this._htmlLanguageService.findDocumentHighlights(document, position, htmlDocument);
+    return this._htmlLanguageService.findDocumentHighlights(
+      document,
+      position,
+      htmlDocument
+    );
   }
 
   async findDocumentLinks(uri) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return [];
     return this._htmlLanguageService.findDocumentLinks(document, null);
   }
 
   async findDocumentSymbols(uri) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return [];
     let htmlDocument = this._htmlLanguageService.parseHTMLDocument(document);
-    return this._htmlLanguageService.findDocumentSymbols(document, htmlDocument);
+    return this._htmlLanguageService.findDocumentSymbols(
+      document,
+      htmlDocument
+    );
   }
 
   async getFoldingRanges(uri, context) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return [];
     return this._htmlLanguageService.getFoldingRanges(document, context);
   }
 
   async getSelectionRanges(uri, positions) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return [];
     return this._htmlLanguageService.getSelectionRanges(document, positions);
   }
 
   async doRename(uri, position, newName) {
-    let document = this._getTextDocument(uri);
+    let document = this.getTextDocument(uri);
     if (!document) return null;
     let htmlDocument = this._htmlLanguageService.parseHTMLDocument(document);
-    return this._htmlLanguageService.doRename(document, position, newName, htmlDocument);
+    return this._htmlLanguageService.doRename(
+      document,
+      position,
+      newName,
+      htmlDocument
+    );
   }
 }
 
