@@ -3,7 +3,7 @@ name: Monaco Angular PR
 on:
   pull_request:
     branches:
-      - main
+      - master
     paths:
       - "package.json"
       - "pnpm-lock.yaml"
