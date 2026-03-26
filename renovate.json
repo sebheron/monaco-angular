@@ -3,18 +3,17 @@
   "extends": [
     "config:recommended"
   ],
-  "automerge": true,
-  "automergeType": "pr",
-  "automergeStrategy": "squash",
   "rebaseWhen": "auto",
+  "postUpdateOptions": ["pnpmDedupe"],
   "packageRules": [
     {
       "matchPackageNames": ["@angular/language-service", "@angular/core", "monaco-editor"],
-      "stabilityDays": 0
+      "minimumReleaseAge": "0 days"
     },
     {
       "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
+      "automerge": true,
+      "automergeType": "pr"
     }
   ]
 }
