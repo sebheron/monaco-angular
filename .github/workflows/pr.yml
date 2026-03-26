@@ -30,3 +30,27 @@ jobs:
       - run: pnpm build
       - run: pnpm --filter sandbox exec playwright install --with-deps chromium
       - run: pnpm test
+      - name: Generate changeset
+        run: |
+          TYPE="patch"
+          TITLE="${{ github.event.pull_request.title }}"
+          
+          if echo "$TITLE" | grep -qiE "^feat|feature|minor"; then
+            TYPE="minor"
+          elif echo "$TITLE" | grep -qiE "^breaking|major|BREAKING"; then
+            TYPE="major"
+          fi
+          
+          echo "---" > .changeset/auto-changeset.md
+          echo "\"monaco-angular-ls\": $TYPE" >> .changeset/auto-changeset.md
+          echo "---" >> .changeset/auto-changeset.md
+          echo "" >> .changeset/auto-changeset.md
+          echo "$TITLE" >> .changeset/auto-changeset.md
+      
+      - name: Commit changeset
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .changeset/auto-changeset.md
+          git commit -m "chore: add changeset [skip ci]" || echo "No changes to commit"
+          git push

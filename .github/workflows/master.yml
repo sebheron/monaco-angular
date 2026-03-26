@@ -1,0 +1,47 @@
+name: Monaco Angular Master
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "pkg/**/*"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: "!startsWith(github.event.head_commit.message, 'chore:')"
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v3
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: "20.x"
+          node-version-file: "package.json"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter sandbox exec playwright install --with-deps chromium
+      - run: pnpm test
+      - name: Deploy sandbox to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./pkg/sandbox/dist
+      - name: Create changeset version PR
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset version
+          commit: "chore: version packages"
+          title: "chore: version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
