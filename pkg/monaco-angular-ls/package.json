@@ -1,7 +1,7 @@
 {
-  "name": "monaco-angular-ls",
+  "name": "monaco-angular",
   "version": "21.2.5",
-  "description": "Worker for Angular language service in Monaco Editor",
+  "description": "Worker for Angular language service in the Monaco Editor",
   "type": "module",
   "keywords": [
     "angular",
@@ -29,9 +29,9 @@
   },
   "types": "./main.d.ts",
   "exports": {
-    "./worker": "./esm/monaco-angular-ls.worker.js",
+    "./worker": "./esm/monaco-angular.worker.js",
     ".": {
-      "import": "./esm/monaco-angular-ls.js",
+      "import": "./esm/monaco-angular.js",
       "types": "./main.d.ts"
     }
   },
@@ -39,7 +39,7 @@
     "build.js",
     "licenses.json",
     "main.d.ts",
-    "./esm/monaco-angular-ls.js",
-    "./esm/monaco-angular-ls.worker.js"
+    "./esm/monaco-angular.js",
+    "./esm/monaco-angular.worker.js"
   ]
 }

@@ -29,7 +29,7 @@ importers:
       '@angular/core':
         specifier: ^21.2.5
         version: 21.2.5(rxjs@7.8.2)
-      monaco-angular-ls:
+      monaco-angular:
         specifier: workspace:*
         version: link:../monaco-angular-ls
       monaco-editor:

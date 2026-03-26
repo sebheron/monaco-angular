@@ -40,12 +40,11 @@ export default defineConfig({
   output: {
     dir: "esm",
     format: "esm",
-    // file: "monaco-angular-ls.worker.js",
     entryFileNames: (chunk) => {
       if (chunk.name === "worker") {
-        return "monaco-angular-ls.worker.js";
+        return "monaco-angular.worker.js";
       }
-      return "monaco-angular-ls.js";
+      return "monaco-angular.js";
     },
     // Might need to figure out how to put this in the actual file, otherwise I can't test without building.
     intro: "var require;var document;var process;",

@@ -3,8 +3,8 @@ import coreTypes from '../node_modules/@angular/core/types/core.d.ts?raw';
 import tslibTypes from '../node_modules/tslib/tslib.d.ts?raw';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
-import angularWorker from 'monaco-angular-ls/worker?worker';
-import setupAngularWorker from 'monaco-angular-ls';
+import angularWorker from 'monaco-angular/worker?worker';
+import setupAngularWorker from 'monaco-angular';
 
 setupAngularWorker();
 const angularWorkerInstance = new angularWorker();
