@@ -28,4 +28,5 @@ jobs:
         uses: pnpm/action-setup@v4
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:ci
