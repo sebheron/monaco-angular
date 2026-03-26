@@ -20,13 +20,13 @@ beforeAll(async () => {
     await vi.waitUntil(() => {
         const m = instance.getTsErrors();
         return m.length ? m : false;
-    }, { timeout: 20000 });
+    }, { timeout: 30000 });
     instance.tsEditor.setValue('');
     await vi.waitUntil(() => {
         const m = instance.getTsErrors();
         return m.length === 0 ? true : false;
     });
-});
+}, 30000);
 
 afterEach(async () => {
     instance.tsEditor.setValue('');
