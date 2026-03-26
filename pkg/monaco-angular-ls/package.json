@@ -18,7 +18,7 @@
   "license": "MIT",
   "packageManager": "pnpm@10.28.0",
   "devDependencies": {
-    "@angular/language-service": "21.2.5",
+    "@angular/language-service": "21.2.6",
     "rolldown": "1.0.0-rc.10"
   },
   "peerDependencies": {
