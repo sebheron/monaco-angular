@@ -34,6 +34,7 @@ jobs:
       - run: pnpm --filter sandbox exec playwright install --with-deps chromium
       - run: pnpm test
       - name: Generate and commit changeset
+        if: "!startsWith(github.event.pull_request.title, 'chore: version packages')"
         run: |
           if [ -f .changeset/auto-changeset.md ]; then
             echo "Changeset already exists, skipping"
