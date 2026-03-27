@@ -1,20 +1,6 @@
 import * as monaco from "monaco-editor";
 import setupAngularWorker from 'monaco-angular';
 
-// core.d.ts
-// primitives-di.d.ts
-// primitives-event-dispatch.d.ts
-// primitives-signals.d.ts
-// rxjs-interop.d.ts
-// testing.d.ts
-// _api-chunk.d.ts
-// _chrome_dev_tools_performance-chunk.d.ts
-// _discovery-chunk.d.ts
-// _effect-chunk.d.ts
-// _event_dispatcher-chunk.d.ts
-// _formatter-chunk.d.ts
-// _weak_ref-chunk.d.ts
-
 import coreDTS from '../node_modules/@angular/core/types/core.d.ts?raw';
 import primitivesDiDTS from '../node_modules/@angular/core/types/primitives-di.d.ts?raw';
 import primitivesEventDispatchDTS from '../node_modules/@angular/core/types/primitives-event-dispatch.d.ts?raw';

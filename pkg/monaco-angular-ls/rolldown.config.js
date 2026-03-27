@@ -1,4 +1,5 @@
 import { defineConfig } from "rolldown";
+import fs from "fs";
 
 const googleLegal = `/**
 * The following licence applies to the @angular/language-service package.
@@ -16,6 +17,12 @@ export default defineConfig({
     main: "main.js",
   },
   plugins: [
+    {
+      name: "copy-readme",
+      buildEnd() {
+        fs.copyFileSync("../../README.md", "README.md");
+      },
+    },
     {
       name: "remove-require-polyfill",
       renderChunk(code) {
