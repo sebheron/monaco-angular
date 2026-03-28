@@ -9,7 +9,6 @@ on:
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "pkg/**/*"
-      - "pkg/*"
 
 jobs:
   build:

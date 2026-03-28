@@ -10,9 +10,6 @@ on:
       - "pnpm-workspace.yaml"
       - "pkg/**/*"
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,31 +30,3 @@ jobs:
       - run: pnpm build
       - run: pnpm --filter sandbox exec playwright install --with-deps chromium
       - run: pnpm test
-      - name: Generate and commit changeset
-        if: "!startsWith(github.event.pull_request.title, 'chore: version packages')"
-        run: |
-          if [ -f .changeset/auto-changeset.md ]; then
-            echo "Changeset already exists, skipping"
-            exit 0
-          fi
-
-          TYPE="patch"
-          TITLE="${{ github.event.pull_request.title }}"
-          
-          if echo "$TITLE" | grep -qiE "^feat|feature|minor"; then
-            TYPE="minor"
-          elif echo "$TITLE" | grep -qiE "^breaking|major|BREAKING"; then
-            TYPE="major"
-          fi
-          
-          echo "---" > .changeset/auto-changeset.md
-          echo "\"monaco-angular\": $TYPE" >> .changeset/auto-changeset.md
-          echo "---" >> .changeset/auto-changeset.md
-          echo "" >> .changeset/auto-changeset.md
-          echo "$TITLE" >> .changeset/auto-changeset.md
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .changeset/auto-changeset.md
-          git commit -m "chore: add changeset"
-          git push origin HEAD:${{ github.head_ref }}

@@ -1,27 +1,16 @@
-name: Monaco Angular Master
-
+name: Monaco Angular
 on:
   push:
     branches:
       - master
-    paths:
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "pnpm-workspace.yaml"
-      - "pkg/**/*"
-
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
     if: "!startsWith(github.event.head_commit.message, 'chore:')"
     steps:
-      - name: Checkout your repository using git
+      - name: Checkout repository
         uses: actions/checkout@v6
-      - name: Setup Node.js environment
+      - name: Setup Node.js
         uses: actions/setup-node@v6.3.0
         with:
           node-version: "24.x"
@@ -32,18 +21,46 @@ jobs:
       - run: pnpm build
       - run: pnpm --filter sandbox exec playwright install --with-deps chromium
       - run: pnpm test
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: pkg/*/dist
       - name: Deploy sandbox to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./pkg/sandbox/dist
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "24.x"
+          node-version-file: "package.json"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+      - run: pnpm install --frozen-lockfile
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: pkg/*/dist
+
       - name: Create changeset version PR or publish
         uses: changesets/action@v1
         with:
           version: pnpm changeset version
           publish: pnpm changeset publish
-          commit: "chore: version packages"
-          title: "chore: version packages"
+          commit: "release: version packages"
+          title: "release: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

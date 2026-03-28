@@ -1,8 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
   "rebaseWhen": "auto",
   "postUpdateOptions": ["pnpmDedupe"],
   "packageRules": [
@@ -14,6 +12,14 @@
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "automergeType": "pr"
+    },
+    {
+      "matchPackageNames": ["@angular/language-service"],
+      "postUpgradeTasks": {
+        "commands": ["node scripts/create-changeset.mjs {{{newVersion}}}"],
+        "fileFilters": [".changeset/**"],
+        "executionMode": "branch"
+      }
     }
   ]
 }
