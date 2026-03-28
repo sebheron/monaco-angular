@@ -21,11 +21,6 @@ jobs:
       - run: pnpm build
       - run: pnpm --filter sandbox exec playwright install --with-deps chromium
       - run: pnpm test
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: dist
-          path: pkg/*/dist
       - name: Deploy sandbox to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -48,12 +43,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
       - run: pnpm install --frozen-lockfile
-      - name: Download build artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: dist
-          path: pkg/*/dist
-
+      - run: pnpm build
       - name: Create changeset version PR or publish
         uses: changesets/action@v1
         with:
