@@ -22,7 +22,7 @@
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
     "@angular/language-service": "21.2.7",
-    "rolldown": "1.0.0-rc.12"
+    "rolldown": "1.0.0-rc.13"
   },
   "peerDependencies": {
     "monaco-editor": ">0.55.0"
