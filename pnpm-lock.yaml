@@ -22,8 +22,8 @@ importers:
         version: 1.0.6
     devDependencies:
       '@angular/language-service':
-        specifier: 21.2.7
-        version: 21.2.7
+        specifier: 21.2.8
+        version: 21.2.8
       rolldown:
         specifier: 1.0.0-rc.12
         version: 1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)
@@ -32,7 +32,7 @@ importers:
     dependencies:
       '@angular/core':
         specifier: ^21.2.5
-        version: 21.2.7(rxjs@7.8.2)
+        version: 21.2.8(rxjs@7.8.2)
       monaco-angular:
         specifier: workspace:*
         version: link:../monaco-angular-ls
@@ -64,11 +64,11 @@ importers:
 
 packages:
 
-  '@angular/core@21.2.7':
-    resolution: {integrity: sha512-4bnskeRNNOZMn3buVw47Zz9Py4B8AZgYHe5xBEMOY5/yrldb7OFje5gWCWls23P18FKwhl+Xx1hgnOEPSs29gw==}
+  '@angular/core@21.2.8':
+    resolution: {integrity: sha512-hI7n4t8qgFJaVV55LIaNuzcdP+/IeuqQRu3huSLo47Gf6uZAD0Acj4Ye9SC8YNmhUu5/RiImngm9NOlcI2oCJA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/compiler': 21.2.7
+      '@angular/compiler': 21.2.8
       rxjs: ^6.5.3 || ^7.4.0
       zone.js: ~0.15.0 || ~0.16.0
     peerDependenciesMeta:
@@ -77,8 +77,8 @@ packages:
       zone.js:
         optional: true
 
-  '@angular/language-service@21.2.7':
-    resolution: {integrity: sha512-XulGTWSw9S3CbTLmNivZtaqfZC2QJvt0grApV/bPZ1evRmnvO0Ep3EaLN2+zAfBQiD5tg3eTHhsCemL5HD+CWw==}
+  '@angular/language-service@21.2.8':
+    resolution: {integrity: sha512-Eyvoo3ttFhRAAEmPcLkLfbEtTLfKnAxRAbxNoA9eDXozskkgaDDBUAHd9qOC1A6cnVda5nP4aNeUa+I81Q2maw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@babel/runtime@7.29.2':
@@ -1072,12 +1072,12 @@ packages:
 
 snapshots:
 
-  '@angular/core@21.2.7(rxjs@7.8.2)':
+  '@angular/core@21.2.8(rxjs@7.8.2)':
     dependencies:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/language-service@21.2.7': {}
+  '@angular/language-service@21.2.8': {}
 
   '@babel/runtime@7.29.2': {}
 
