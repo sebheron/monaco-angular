@@ -1,5 +1,11 @@
 # monaco-angular
 
+## 0.1.1
+
+### Patch Changes
+
+- d2b2bb8: Fix an issue with htmlWorker imports breaking bundling.
+
 ## 0.1.0
 
 ### Minor Changes
