@@ -4,61 +4,21 @@ import { typescript } from "monaco-editor/esm/vs/language/typescript/lib/typescr
 import { TypeScriptWorker } from "monaco-editor/esm/vs/language/typescript/ts.worker.js";
 import { getLanguageService as getHTMLLanguageService } from "monaco-editor/esm/external/vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import { TextDocument } from "monaco-editor/esm/external/vscode-languageserver-textdocument/lib/esm/main.js";
-import path from "path-browserify-esm";
 
-const stripFileProtocol = (p) => p.replace(/^file:\/\//, "");
-const hasFileProtocol = (p) => p.startsWith("file://");
-const addFileProtocol = (p) => "file://" + p;
-
-const pathHandlers = {
-  isAbsolute: (original) => (p) => hasFileProtocol(p) || original(p),
-
-  resolve:
-    (original) =>
-    (...args) => {
-      const cleaned = args.map((a) =>
-        typeof a === "string" ? stripFileProtocol(a) : a
-      );
-      if (cleaned.length === 0 || !cleaned[0].startsWith("/")) {
-        cleaned.unshift("/");
-      }
-      return addFileProtocol(original(...cleaned));
-    },
-
-  join:
-    (original) =>
-    (...args) => {
-      const hadProtocol = args.some((a) => hasFileProtocol(a));
-      const result = original(...args.map((a) => stripFileProtocol(a)));
-      return hadProtocol ? addFileProtocol(result) : result;
-    },
-
-  relative: (original) => (from, to) =>
-    original(stripFileProtocol(from), stripFileProtocol(to)),
-
-  dirname: (original) => (p) =>
-    hasFileProtocol(p)
-      ? addFileProtocol(original(stripFileProtocol(p)))
-      : original(p),
-
-  basename: (original) => (p, ext) => original(stripFileProtocol(p), ext),
-
-  extname: (original) => (p) => original(stripFileProtocol(p)),
-
-  normalize: (original) => (p) =>
-    hasFileProtocol(p)
-      ? addFileProtocol(original(stripFileProtocol(p)))
-      : original(p),
-};
-
-const wrappedPath = new Proxy(path, {
-  get: (target, prop) => {
-    const original = target[prop];
-    if (typeof original !== "function") return original;
-    if (prop in pathHandlers) return pathHandlers[prop](original);
-    return original.bind ? original.bind(target) : original;
+const path = {
+  isAbsolute: typescript.pathIsAbsolute ?? ((p) => typescript.getRootLength(p) !== 0),
+  resolve: (...args) => typescript.resolvePath(args[0] ?? "", ...args.slice(1)),
+  join: (...args) => typescript.combinePaths(args[0] ?? "", ...args.slice(1)),
+  dirname: typescript.getDirectoryPath,
+  basename: (p, ext) => {
+    const base = typescript.getBaseFileName(p);
+    return ext && base.endsWith(ext) ? base.slice(0, -ext.length) : base;
   },
-});
+  extname: (p) => typescript.getAnyExtensionFromPath(p),
+  normalize: typescript.normalizePath,
+  relative: (from, to) =>
+    typescript.getRelativePathFromDirectory(from, to, /* ignoreCase */ false),
+};
 
 function buildFileAccessor(worker) {
   const readFile = (fileName) => worker.getScriptText(fileName);
@@ -174,13 +134,11 @@ function buildRequireWrap(fileAccessor) {
       typescript,
       fs,
       os: {},
-      path: wrappedPath,
-      "node:path": wrappedPath,
+      path: path,
+      "node:path": path,
       url: {
-        fileURLToPath: (u) => stripFileProtocol(u),
-        pathToFileURL: (p) => ({
-          href: hasFileProtocol(p) ? p : addFileProtocol(p),
-        }),
+        fileURLToPath: (u) => new URL(u).pathname,
+        pathToFileURL: (p) => new URL("file://" + p),
         URL: globalThis.URL,
       },
       module: { createRequire: () => wrappedRequire },
@@ -236,8 +194,16 @@ function buildProject(worker, virtualScriptInfos, fileAccessor) {
   const scriptInfoCache = new Map();
 
   const getScriptInfo = (fileName) => {
-    if (virtualScriptInfos.has(fileName))
-      return virtualScriptInfos.get(fileName);
+    if (virtualScriptInfos.has(fileName)) {
+      const info = virtualScriptInfos.get(fileName);
+      const currentVersion = worker.getScriptVersion(fileName);
+      if (currentVersion && info._lastSyncedVersion !== currentVersion) {
+        const current = worker.getScriptText(fileName);
+        if (current !== undefined) info.open(current);
+        info._lastSyncedVersion = currentVersion;
+      }
+      return info;
+    }
 
     if (scriptInfoCache.has(fileName)) {
       if (fileAccessor.fileExists(fileName))

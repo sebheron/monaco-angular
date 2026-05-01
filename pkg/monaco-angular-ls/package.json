@@ -27,9 +27,6 @@
   "peerDependencies": {
     "monaco-editor": ">0.55.0"
   },
-  "dependencies": {
-    "path-browserify-esm": "^1.0.6"
-  },
   "types": "./main.d.ts",
   "exports": {
     "./worker": "./esm/monaco-angular.worker.js",
