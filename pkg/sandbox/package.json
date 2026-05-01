@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc --noEmit && vite build",
+        "serve": "serve dist",
         "test:ui": "vitest",
         "test": "vitest --browser.headless"
     },
@@ -21,6 +22,7 @@
         "@vitest/browser": "^4.1.2",
         "@vitest/browser-playwright": "^4.1.2",
         "playwright": "^1.58.2",
+        "serve": "^14.2.6",
         "typescript": "^6.0.0",
         "vite": "^8.0.0",
         "vitest": "^4.1.2"

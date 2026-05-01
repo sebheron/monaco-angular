@@ -3,6 +3,7 @@
     "scripts": {
         "dev": "pnpm -r --parallel dev",
         "build": "pnpm -r build",
+        "serve": "pnpm --filter sandbox serve",
         "test": "pnpm --filter sandbox test",
         "test:ui": "pnpm --filter sandbox test:ui"
     },
