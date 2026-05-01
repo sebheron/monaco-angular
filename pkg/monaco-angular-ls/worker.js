@@ -194,8 +194,16 @@ function buildProject(worker, virtualScriptInfos, fileAccessor) {
   const scriptInfoCache = new Map();
 
   const getScriptInfo = (fileName) => {
-    if (virtualScriptInfos.has(fileName))
-      return virtualScriptInfos.get(fileName);
+    if (virtualScriptInfos.has(fileName)) {
+      const info = virtualScriptInfos.get(fileName);
+      const currentVersion = worker.getScriptVersion(fileName);
+      if (currentVersion && info._lastSyncedVersion !== currentVersion) {
+        const current = worker.getScriptText(fileName);
+        if (current !== undefined) info.open(current);
+        info._lastSyncedVersion = currentVersion;
+      }
+      return info;
+    }
 
     if (scriptInfoCache.has(fileName)) {
       if (fileAccessor.fileExists(fileName))
