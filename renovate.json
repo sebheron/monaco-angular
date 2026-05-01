@@ -9,11 +9,6 @@
       "minimumReleaseAge": "0 days"
     },
     {
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true,
-      "automergeType": "pr"
-    },
-    {
       "matchPackageNames": ["@angular/language-service"],
       "postUpgradeTasks": {
         "commands": ["node scripts/create-changeset.mjs {{{newVersion}}}"],

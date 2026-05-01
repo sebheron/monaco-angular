@@ -1,8 +1,8 @@
 import { WorkerManager as TSWorkerManager } from "monaco-editor/esm/vs/language/typescript/workerManager.js";
 import { WorkerManager as HTMLWorkerManager } from "monaco-editor/esm/vs/language/html/workerManager.js";
 import { Emitter } from 'monaco-editor/esm/vs/base/common/event.js';
-import { DiagnosticsAdapter } from "monaco-editor/esm/vs/language/html/htmlMode.js";
-import { editor, languages } from "monaco-editor/esm/vs/editor/editor.api2.js";
+import { DiagnosticsAdapter } from "monaco-editor/esm/vs/language/common/lspLanguageFeatures.js";
+import { editor, languages } from "monaco-editor";
 import { createWebWorker } from "monaco-editor/esm/vs/common/workers.js";
 import { typescript } from "monaco-editor/esm/vs/language/typescript/lib/typescriptServices.js";
 
