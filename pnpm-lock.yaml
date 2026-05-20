@@ -45,10 +45,10 @@ importers:
     devDependencies:
       '@vitest/browser':
         specifier: ^4.1.2
-        version: 4.1.5(vite@8.0.10(jiti@2.6.1))(vitest@4.1.5)
+        version: 4.1.5(vite@8.0.10)(vitest@4.1.5)
       '@vitest/browser-playwright':
         specifier: ^4.1.2
-        version: 4.1.5(playwright@1.59.1)(vite@8.0.10(jiti@2.6.1))(vitest@4.1.5)
+        version: 4.1.5(playwright@1.59.1)(vite@8.0.10)(vitest@4.1.5)
       playwright:
         specifier: ^1.58.2
         version: 1.59.1
@@ -60,10 +60,10 @@ importers:
         version: 6.0.3
       vite:
         specifier: ^8.0.0
-        version: 8.0.10(jiti@2.6.1)
+        version: 8.0.10
       vitest:
         specifier: ^4.1.2
-        version: 4.1.5(@vitest/browser-playwright@4.1.5)(vite@8.0.10(jiti@2.6.1))
+        version: 4.1.5(@vitest/browser-playwright@4.1.5)(vite@8.0.10)
 
 packages:
 
@@ -783,10 +783,6 @@ packages:
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
-
-  jiti@2.6.1:
-    resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
-    hasBin: true
 
   js-yaml@3.14.2:
     resolution: {integrity: sha512-PMSmkqxr106Xa156c2M265Z+FTrPl+oxd/rgOQy2tijQeK5TxQ43psO1ZCwhVOSdnn+RzkzlRz/eY4BgJBYVpg==}
@@ -1704,29 +1700,29 @@ snapshots:
   '@types/trusted-types@2.0.7':
     optional: true
 
-  '@vitest/browser-playwright@4.1.5(playwright@1.59.1)(vite@8.0.10(jiti@2.6.1))(vitest@4.1.5)':
+  '@vitest/browser-playwright@4.1.5(playwright@1.59.1)(vite@8.0.10)(vitest@4.1.5)':
     dependencies:
-      '@vitest/browser': 4.1.5(vite@8.0.10(jiti@2.6.1))(vitest@4.1.5)
-      '@vitest/mocker': 4.1.5(vite@8.0.10(jiti@2.6.1))
+      '@vitest/browser': 4.1.5(vite@8.0.10)(vitest@4.1.5)
+      '@vitest/mocker': 4.1.5(vite@8.0.10)
       playwright: 1.59.1
       tinyrainbow: 3.1.0
-      vitest: 4.1.5(@vitest/browser-playwright@4.1.5)(vite@8.0.10(jiti@2.6.1))
+      vitest: 4.1.5(@vitest/browser-playwright@4.1.5)(vite@8.0.10)
     transitivePeerDependencies:
       - bufferutil
       - msw
       - utf-8-validate
       - vite
 
-  '@vitest/browser@4.1.5(vite@8.0.10(jiti@2.6.1))(vitest@4.1.5)':
+  '@vitest/browser@4.1.5(vite@8.0.10)(vitest@4.1.5)':
     dependencies:
       '@blazediff/core': 1.9.1
-      '@vitest/mocker': 4.1.5(vite@8.0.10(jiti@2.6.1))
+      '@vitest/mocker': 4.1.5(vite@8.0.10)
       '@vitest/utils': 4.1.5
       magic-string: 0.30.21
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.1.0
-      vitest: 4.1.5(@vitest/browser-playwright@4.1.5)(vite@8.0.10(jiti@2.6.1))
+      vitest: 4.1.5(@vitest/browser-playwright@4.1.5)(vite@8.0.10)
       ws: 8.20.0
     transitivePeerDependencies:
       - bufferutil
@@ -1743,13 +1739,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.5(vite@8.0.10(jiti@2.6.1))':
+  '@vitest/mocker@4.1.5(vite@8.0.10)':
     dependencies:
       '@vitest/spy': 4.1.5
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.0.10(jiti@2.6.1)
+      vite: 8.0.10
 
   '@vitest/pretty-format@4.1.5':
     dependencies:
@@ -2061,9 +2057,6 @@ snapshots:
       is-docker: 2.2.1
 
   isexe@2.0.0: {}
-
-  jiti@2.6.1:
-    optional: true
 
   js-yaml@3.14.2:
     dependencies:
@@ -2469,7 +2462,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite@8.0.10(jiti@2.6.1):
+  vite@8.0.10:
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -2478,12 +2471,11 @@ snapshots:
       tinyglobby: 0.2.16
     optionalDependencies:
       fsevents: 2.3.3
-      jiti: 2.6.1
 
-  vitest@4.1.5(@vitest/browser-playwright@4.1.5)(vite@8.0.10(jiti@2.6.1)):
+  vitest@4.1.5(@vitest/browser-playwright@4.1.5)(vite@8.0.10):
     dependencies:
       '@vitest/expect': 4.1.5
-      '@vitest/mocker': 4.1.5(vite@8.0.10(jiti@2.6.1))
+      '@vitest/mocker': 4.1.5(vite@8.0.10)
       '@vitest/pretty-format': 4.1.5
       '@vitest/runner': 4.1.5
       '@vitest/snapshot': 4.1.5
@@ -2500,10 +2492,10 @@ snapshots:
       tinyexec: 1.1.1
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
-      vite: 8.0.10(jiti@2.6.1)
+      vite: 8.0.10
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@vitest/browser-playwright': 4.1.5(playwright@1.59.1)(vite@8.0.10(jiti@2.6.1))(vitest@4.1.5)
+      '@vitest/browser-playwright': 4.1.5(playwright@1.59.1)(vite@8.0.10)(vitest@4.1.5)
     transitivePeerDependencies:
       - msw
 
