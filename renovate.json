@@ -1,20 +1,31 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "rebaseWhen": "auto",
+  "rebaseWhen": "behind-base-branch",
   "postUpdateOptions": ["pnpmDedupe"],
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
   "packageRules": [
     {
-      "matchPackageNames": ["@angular/language-service", "@angular/core", "monaco-editor"],
-      "minimumReleaseAge": "0 days"
+      "description": "Everything lands in a single rolling PR",
+      "matchPackageNames": ["*"],
+      "groupName": "dependencies",
+      "groupSlug": "all",
+      "separateMajorMinor": false,
+      "separateMinorPatch": false
     },
     {
-      "matchPackageNames": ["@angular/language-service"],
-      "postUpgradeTasks": {
-        "commands": ["node scripts/create-changeset.mjs {{{newVersion}}}"],
-        "fileFilters": [".changeset/**"],
-        "executionMode": "branch"
-      }
+      "description": "Angular gets its own PR so the changelog can be reviewed on its own",
+      "matchPackageNames": ["@angular/**"],
+      "groupName": "angular",
+      "groupSlug": "angular",
+      "separateMajorMinor": false,
+      "separateMinorPatch": false
+    },
+    {
+      "description": "Pipeline tooling is not tracked",
+      "matchManagers": ["github-actions"],
+      "enabled": false
     }
   ]
 }

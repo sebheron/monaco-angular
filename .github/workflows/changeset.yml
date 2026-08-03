@@ -1,0 +1,38 @@
+name: Monaco Angular Changeset
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "pkg/monaco-angular-ls/package.json"
+
+permissions:
+  contents: write
+
+jobs:
+  changeset:
+    if: startsWith(github.head_ref, 'renovate/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: "24.x"
+          node-version-file: "package.json"
+      - run: node scripts/bundle-update.mjs
+      - name: Commit changeset
+        run: |
+          if [ -z "$(git status --porcelain .changeset)" ]; then
+            echo "Changeset already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .changeset
+          git commit -m "chore: add changeset for bundled language service"
+          git push
